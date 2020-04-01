@@ -11,7 +11,7 @@
     <groupId>com.snackpub</groupId>
     <artifactId>core-lambda</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>core-lambda</name>
+    <name>core-basic</name>
     <description>use lambda</description>
 
     <properties>

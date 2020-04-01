@@ -1,5 +1,7 @@
 package com.snackpub.core.jdk7;
 
+import java.util.List;
+
 /**
  * Switch 新特性
  *
