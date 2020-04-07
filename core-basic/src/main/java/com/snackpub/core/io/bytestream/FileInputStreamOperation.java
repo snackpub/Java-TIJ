@@ -36,7 +36,9 @@ public class FileInputStreamOperation {
             }
             //Consumer<T> 实现方式
             PrintInfo printInfo = System.out::println;
+            // 数据类型可省略
             PrintInfo printInfo2 = infos -> System.out.println(infos);
+            PrintInfo printInfo3 = (String infos) -> { System.out.println(infos);};
             printInfo.printText(sbToStr.toString());
             printInfo.printText("----------------------------");
             printInfo2.printText(sbToStr.toString());
