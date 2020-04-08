@@ -1,6 +1,8 @@
 package com.snackpub.core.issue;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Demo {
@@ -38,23 +40,17 @@ public class Demo {
         }
 
         Integer[][] sortScore = new Integer[arr.length - 1][5];
-        for (int i = 0; i < newArr.length - 1; i++) {
+        for (int i = 1; i < newArr.length; i++) {
             for (int i1 = 0; i1 < newArr[i].length; i1++) {
-                if (newArr[i][i1] != null && i != 0) {
-                    sortScore[i][i1] = Integer.parseInt(newArr[i][i1]);
-                }
+                sortScore[i - 1][i1] = Integer.parseInt(newArr[i][i1]);
             }
         }
 
-//        Arrays.sort(sortScore, Collections.reverseOrder());
-//        Arrays.sort(sortScore, 3, 3, new Comparator<String[]>() {
-//            @Override
-//            public int compare(String[] o1, String[] o2) {
-//                return Integer.parseInt(o1[0]) - Integer.parseInt(o2[0]);
-//            }
-//        });
-        List<Integer[]> strings = Arrays.asList(sortScore);
-        for (Integer[] string : strings) {
+        // 对数据进行排序
+        Arrays.sort(sortScore, Comparator.comparingInt(o -> o[o.length - 1]));
+
+
+        for (Integer[] string : sortScore) {
             for (Integer s : string) {
                 System.out.println(s);
             }
