@@ -1,9 +1,7 @@
 package com.snackpub.core.issue;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 public class Demo {
 
@@ -13,7 +11,7 @@ public class Demo {
      * 第一列学生学号第二列数学成绩第三列物理成绩第四列化学成绩），返回值为N*5的二维数组（前四列相同，第五列为总分列），要求返回的二维数组按照总分列倒序。
      */
     public static void main(String[] args) {
-        String[][] scoreArr = new String[][]{{"学号", "数学", "化学", "生物"}, {"1", "200", "100", "600"}, {"2", "400", "100", "100"}};
+        String[][] scoreArr = new String[][]{{"学号", "数学", "化学", "生物"}, {"1", "200", "109", "600"}, {"2", "400", "100", "110"},{"3", "400", "600", "110"}};
         calculateScore(scoreArr);
     }
 
@@ -46,14 +44,24 @@ public class Demo {
             }
         }
 
-        // 对数据进行排序
+        // 对数组总分进行排序
         Arrays.sort(sortScore, Comparator.comparingInt(o -> o[o.length - 1]));
 
-
-        for (Integer[] string : sortScore) {
-            for (Integer s : string) {
-                System.out.println(s);
+        String[][] finalArr = new String[sortScore.length + 1][5];
+        for (int i = 0; i < sortScore.length; i++) {
+            if (i == 0) {
+                finalArr[i] = new String[]{"学号", "\t数学", "\t化学", "\t生物", "\t总分"};
             }
+            for (int i1 = 0; i1 < sortScore[i].length; i1++) {
+                finalArr[i + 1][i1] = sortScore[i][i1] + "\t\t";
+
+            }
+        }
+        for (String[] string : finalArr) {
+            for (String s : string) {
+                System.out.print(s + "");
+            }
+            System.out.println();
         }
     }
 }
