@@ -3,6 +3,10 @@ package com.snackpub.core.issue;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * @author snackpub
+ * @date 2020/4/9 22:17
+ */
 public class Demo {
 
     /**
@@ -11,7 +15,7 @@ public class Demo {
      * 第一列学生学号第二列数学成绩第三列物理成绩第四列化学成绩），返回值为N*5的二维数组（前四列相同，第五列为总分列），要求返回的二维数组按照总分列倒序。
      */
     public static void main(String[] args) {
-        String[][] scoreArr = new String[][]{{"学号", "数学", "化学", "生物"}, {"1", "200", "109", "600"}, {"2", "400", "100", "110"},{"3", "400", "600", "110"}};
+        String[][] scoreArr = new String[][]{{"学号", "数学", "化学", "生物"}, {"1", "200", "109", "600"}, {"2", "400", "100", "110"}, {"3", "400", "600", "110"}};
         calculateScore(scoreArr);
     }
 
