@@ -4,7 +4,7 @@ import java.util.stream.Stream;
 
 /**
  * reduce 方法的主要作用是把 Stream 元素组合起来
- * 第一个参数（空白字符）即为起始值，第二个参数（String::concat）为 BinaryOperator。
+ * 第一个参数（空白字符）即为起始值(seed 种子)，第二个参数（String::concat）为 BinaryOperator。
  * 这类有起始值的 reduce() 都返回具体的对象。而对于第四个示例没有起始值的 reduce()，
  * 由于可能没有足够的元素，返回的是 Optional，请留意这个区别。
  *
