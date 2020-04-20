@@ -2,10 +2,8 @@ package com.snackpub.core.lambda.higher_order_fun;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
