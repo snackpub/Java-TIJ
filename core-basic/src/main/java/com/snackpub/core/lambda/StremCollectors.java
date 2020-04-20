@@ -2,7 +2,11 @@ package com.snackpub.core.lambda;
 
 import com.snackpub.core.lambda.model.Person;
 import com.snackpub.core.lambda.supplier.PersonSupplier;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +25,8 @@ public class StremCollectors {
 
     public static void main(String[] args) {
 //        group();
-        partitioningBy();
+//        partitioningBy();
+        groupIP();
     }
 
     /**
@@ -31,7 +36,10 @@ public class StremCollectors {
      */
 
     public static void group() {
-        Map<Integer, List<Person>> personGroups = Stream.generate(new PersonSupplier()).limit(100).collect(Collectors.groupingBy(Person::getAge));
+        Map<Integer, List<Person>> personGroups = Stream
+                .generate(new PersonSupplier())
+                .limit(100)
+                .collect(Collectors.groupingBy(Person::getAge));
         Iterator it = personGroups.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Integer, List<Person>> persons = (Map.Entry) it.next();
@@ -39,6 +47,38 @@ public class StremCollectors {
 
         }
     }
+
+    public static void groupIP() {
+        // 内部类方式add默认初始值，这种方式性能很差
+        List<PlayList> ips = new ArrayList<>(new ArrayList<PlayList>() {{
+            add(new PlayList("192.168.1.1", 0));
+        }});
+        for (int i = 0; i < 5; i++) {
+            ips.add(new PlayList("192.168.1." + i, i));
+        }
+        String ip = "192.168.1.1";
+        Map<Boolean, List<PlayList>> collect = ips.stream().collect(
+                Collectors.partitioningBy(m -> m.getIp().equals(ip))
+        );
+
+        int size = collect.get(true).size();
+        System.out.println(size);
+
+        System.out.println("-------------------------");
+        Iterator iterator = collect.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Boolean, List<PlayList>> next = (Map.Entry) iterator.next();
+            System.out.println("ip " + next.getKey() + " = " + next.getValue());
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class PlayList {
+        private String ip;
+        private Integer id;
+    }
+
 
     /**
      * partitioningBy
