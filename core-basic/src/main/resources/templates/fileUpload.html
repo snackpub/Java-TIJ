@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/upload/image" enctype="multipart/form-data" method="post">
+    <input type="file" name="file" value="文件上传"/>
+    <input type="submit" value="提交"/>
+</form>
+
+<p>非form上传</p>
+<input type="file" id="file" name="file">
+<input type="button" id="button" value="上传">
+</body>
+<script src="/js/jquery-3.5.0.js"></script>
+<script type="text/javascript">
+
+
+    $(function () {
+        $("#button").click(function () {
+            var form = new FormData();
+            form.append("file", document.getElementById("file").files[0]);
+            $.ajax({
+                url: "http://localhost:8081/upload/image",        //后台url
+                data: form,
+                cache: false,
+                async: false,
+                type: "POST",                   //类型，POST或者GET
+                dataType: 'json',              //数据返回类型，可以是xml、json等
+                processData: false,
+                contentType: false,
+                success: function (data) {      //成功，回调函数
+
+                    alert("失败");
+
+                }
+
+            });
+
+        })
+
+    })
+</script>
+</html>

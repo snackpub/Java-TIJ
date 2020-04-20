@@ -1,5 +1,6 @@
 package com.snackpub.core.lambda;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -22,7 +23,8 @@ public class Streamreduce {
         // 求和,sum = 10, 有起始值
         int sum = Stream.of(1, 2, 3, 4).reduce(0, Integer::sum);
         // 求和，sumValue = 10, 无起始值
-        int sumValue = Stream.of(1, 2, 3, 4).reduce(Integer::sum).get();
+        Optional<Integer> reduce = Stream.of(1, 2, 3, 4).reduce(Integer::sum);
+        int sumValue = reduce.get();
         // 过滤，字符串连接，concat = "ace"
         String filterStrConcat = Stream.of("a", "B", "c", "D", "e", "F")
                 .filter(x -> x.compareTo("Z") > 0)
