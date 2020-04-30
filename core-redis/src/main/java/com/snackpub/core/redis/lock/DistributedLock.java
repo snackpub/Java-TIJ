@@ -1,6 +1,7 @@
 package com.snackpub.core.redis.lock;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.connection.ReturnType;
 import org.springframework.data.redis.core.RedisCallback;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/4/28
  */
 @AllArgsConstructor
+@Slf4j
 public class DistributedLock {
 
     private StringRedisTemplate stringRedisTemplate;
@@ -27,6 +29,11 @@ public class DistributedLock {
                 connection.set(key.getBytes(Charset.forName("UTF-8")), value.getBytes(Charset.forName("UTF-8")),
                         Expiration.from(expirationTime, timeUnit), RedisStringCommands.SetOption.SET_IF_ABSENT));
 
+        if (lockStat) {
+            log.info("key {} 加锁成功", key);
+        } else {
+            log.error("key {} 加锁失败", key);
+        }
         /*stringRedisTemplate.execute(new RedisCallback<Boolean>() {
 
             @Override
@@ -43,11 +50,15 @@ public class DistributedLock {
         // script Lua 脚本
         // KEYS[1] 表示加锁的key
         // ARGV[1] value 只有当线程上下文对象中的值与redis保存的值一致时,才能删掉这个key,释放成功
+        // 'del', KEYS[1] 从redis删除这个key
         // eval()方法是将Lua代码交给Redis服务端执行
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
         boolean unLockStat = stringRedisTemplate.execute((RedisCallback<Boolean>) connection ->
                 connection.eval(script.getBytes(), ReturnType.BOOLEAN, 1,
                         key.getBytes(Charset.forName("UTF-8")), value.getBytes(Charset.forName("UTF-8"))));
+        if (!unLockStat) {
+            log.error("key {} 释放锁失败", key);
+        }
         return unLockStat;
     }
 

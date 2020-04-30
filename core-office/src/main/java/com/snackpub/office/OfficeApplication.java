@@ -1,16 +1,13 @@
-package com.snackpub.core.redis;
+package com.snackpub.office;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * @author snackpub
- * @date 2020/4/28
- */
 @SpringBootApplication
-public class RedisApplicaiton {
+public class OfficeApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RedisApplicaiton.class, args);
+        SpringApplication.run(OfficeApplication.class, args);
     }
+
 }

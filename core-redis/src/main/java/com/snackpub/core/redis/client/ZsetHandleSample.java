@@ -4,6 +4,7 @@ import com.snackpub.core.redis.base.BaseTest;
 import org.junit.Test;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.ZSetOperations;
 
 import java.util.Set;
 
@@ -26,8 +27,11 @@ public class ZsetHandleSample extends BaseTest {
     public void testAdd() {
         redisTemplate.opsForZSet().add("Zset", "testZset1", 9.45);
         redisTemplate.opsForZSet().add("Zset", "testZset2", 9.46);
-        redisTemplate.opsForZSet().add("Zset", "testZset3", 9.47);
-        redisTemplate.opsForZSet().add("Zset", "testZset4", 9.47);
+        // 不管score大小，后者都会替换前者
+        redisTemplate.opsForZSet().add("Zset", "testZset3", 9.50);
+        redisTemplate.opsForZSet().add("Zset", "testZset3", 9.49);
+
+        redisTemplate.opsForZSet().add("Zset", "testZset6", 9.48);
 
         // range 通过索引之间返回有序集合指定区间的大小
         Set zset = redisTemplate.opsForZSet().range("Zset", 0, 10);
@@ -58,12 +62,19 @@ public class ZsetHandleSample extends BaseTest {
 
     @Test
     public void testZscan() {
-        // 第一个参数总是一个数据库键
-        Cursor zset = redisTemplate.opsForZSet().scan("Zset", ScanOptions.scanOptions().build());
-        boolean b = zset.hasNext();
-        if (b) {
-            Object next = zset.next();
+        // 使用scan命令对redis中指定key进行扫描;匹配获取键值对，ScanOptions.NONE为获取全部键值对；
+        Cursor<ZSetOperations.TypedTuple<Object>> cursor = redisTemplate.opsForZSet().scan("Zset", ScanOptions.NONE);
+        while (cursor.hasNext()) {
+            ZSetOperations.TypedTuple<Object> typedTuple = cursor.next();
+            System.out.println(typedTuple.getValue() + " " + typedTuple.getScore());
         }
+//        System.out.println("-------------");
+//        ScanOptions.ScanOptionsBuilder scanOption = ScanOptions.scanOptions().match("t*");
+//        Cursor<ZSetOperations.TypedTuple> tupleCursor = redisTemplate.opsForZSet().scan("Zset", scanOption.build());
+//        while (tupleCursor.hasNext()) {
+//            ZSetOperations.TypedTuple next = tupleCursor.next();
+//            System.out.println(next.getValue() + " " + next.getScore());
+//        }
     }
 
 
