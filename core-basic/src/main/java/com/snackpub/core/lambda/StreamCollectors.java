@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  * @author snackpub
  * @date 2020/4/11 22:55
  */
-public class StremCollectors {
+public class StreamCollectors {
 
     public static void main(String[] args) {
 //        group();
@@ -42,7 +42,7 @@ public class StremCollectors {
                 .collect(Collectors.groupingBy(Person::getAge));
         Iterator it = personGroups.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<Integer, List<Person>> persons = (Map.Entry) it.next();
+            Map.Entry persons = (Map.Entry) it.next();
             System.out.println("Age " + persons.getKey() + " = " + persons.getValue().size());
 
         }

@@ -1,6 +1,5 @@
 package com.snackpub.core.redis.base;
 
-import lombok.AllArgsConstructor;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,8 +22,5 @@ public class BaseTest {
     @Autowired
     protected RedisTemplate redisTemplate;
 
-
-    @Autowired
-    protected static RedisTemplate rt;
 
 }
