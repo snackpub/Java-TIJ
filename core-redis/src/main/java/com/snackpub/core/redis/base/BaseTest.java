@@ -23,4 +23,8 @@ public class BaseTest {
     @Autowired
     protected RedisTemplate redisTemplate;
 
+
+    @Autowired
+    protected static RedisTemplate rt;
+
 }
