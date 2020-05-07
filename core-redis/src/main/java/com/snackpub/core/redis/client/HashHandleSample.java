@@ -9,7 +9,9 @@ import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.support.collections.RedisCollection;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -36,10 +38,10 @@ public class HashHandleSample extends BaseTest {
 
     @Test
     public void testPut() {
-        // 判断指定 key 对应的 Hash 中是否存在指定的 map 键
-        Assert.assertTrue(redisTemplate.opsForHash().hasKey("TestHash", "FirstElement"));
         // hash 新增元素
         redisTemplate.opsForHash().put("TestHash", "FirstElement", new User(170.0, 130.0));
+        // 判断指定 key 对应的 Hash 中是否存在指定的 map 键
+        Assert.assertTrue(redisTemplate.opsForHash().hasKey("TestHash", "FirstElement"));
 
     }
 
@@ -54,7 +56,7 @@ public class HashHandleSample extends BaseTest {
         System.out.println(testHash);
 
         // 不推荐使用内部类初始化数据
-        Map<Object, Object> hvs = new HashMap<Object, Object>(new HashMap(3) {{
+        Map<String, User> hvs = new HashMap<String, User>(new HashMap(3) {{
             put("user-one", new User(100.0, 1000.0));
             put("user-two", new User(200.0, 2000.0));
             put("user-three", new User(300.0, 3000.0));
@@ -134,17 +136,25 @@ public class HashHandleSample extends BaseTest {
             return map;
         });
 
+        assert hasKyes != null;
         System.out.println("Hgetall " + hkey + " size " + hasKyes.size());
 
         Set<Map.Entry<byte[], byte[]>> entries = hasKyes.entrySet();
-        Iterator<Map.Entry<byte[], byte[]>> iterator = entries.iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<byte[], byte[]> next = iterator.next();
+        for (Map.Entry<byte[], byte[]> next : entries) {
             System.out.println("filed " + new String(next.getKey()) + " value: " + new String(next.getValue()));
         }
 
 
     }
 
+    @Test
+    public void hGet() {
+
+//        redisTemplate.opsForHash().put("TestHash","FirstElement","values");
+
+
+        byte[] execute = (byte[]) redisTemplate.execute((RedisCallback) connection -> connection.hGet("TestHash".getBytes(StandardCharsets.UTF_8), "FirstElement".getBytes(StandardCharsets.UTF_8)));
+        System.out.println(Arrays.toString(execute));
+    }
 
 }

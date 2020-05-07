@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Jedis客户端操作分片模式（ShardedJedis）\
+ * Jedis客户端操作分片模式（ShardedJedis）
  * <p>
  * 分区是分割数据到多个redis实例的处理过程，因此每个实例只保存一个key的子集
  * <p>
