@@ -42,7 +42,7 @@ public class StreamCollectors {
                 .collect(Collectors.groupingBy(Person::getAge));
         Iterator it = personGroups.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry persons = (Map.Entry) it.next();
+            Map.Entry<Integer, List<Person>> persons = (Map.Entry) it.next();
             System.out.println("Age " + persons.getKey() + " = " + persons.getValue().size());
 
         }

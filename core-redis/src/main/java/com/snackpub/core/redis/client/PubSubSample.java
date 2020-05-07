@@ -16,18 +16,11 @@ public class PubSubSample extends BaseTest {
     @Test
     @SneakyThrows
     public void publish() {
+        // 将给定的消息发布到给定的通道
+        redisTemplate.convertAndSend("news", "需要发布的消息");
+        redisTemplate.convertAndSend("news2","国家主席下达最高指令：将对台独高级首领下达斩首行动，代号为0057");
 
-        redisTemplate.convertAndSend("news", "发送消息");
-       /* String s;
-        // 读取控制台字符
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("输入字符, 按下 'end' 键退出。");
-        // 读取字符
-        do {
-            s = reader.readLine();
-            redisTemplate.convertAndSend("news", s);
-            System.out.println(s);
-        } while (!s.equals("end"));*/
+        // news 与 news2 运行时，news2 会优先于news运行，但是我把news2 也改成news代码就会从上到下正常运行；这是什么问题呢？
     }
 
 
