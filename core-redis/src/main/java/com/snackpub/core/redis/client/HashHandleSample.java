@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.support.collections.RedisCollection;
 
+import javax.validation.constraints.AssertTrue;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -148,13 +149,57 @@ public class HashHandleSample extends BaseTest {
     }
 
     @Test
-    public void hGet() {
+    public void hSet() {
+        boolean bool = (boolean) redisTemplate.execute((RedisCallback) connection ->
+                connection.hSet("snackpub".getBytes(), "key1".getBytes(), "value1".getBytes())
+        );
 
-//        redisTemplate.opsForHash().put("TestHash","FirstElement","values");
-
-
-        byte[] execute = (byte[]) redisTemplate.execute((RedisCallback) connection -> connection.hGet("TestHash".getBytes(StandardCharsets.UTF_8), "FirstElement".getBytes(StandardCharsets.UTF_8)));
-        System.out.println(Arrays.toString(execute));
+        Assert.assertTrue(bool);
     }
+
+    @Test
+    public void hGet() {
+        //Hget 命令用于返回哈希表中指定字段的值
+
+        /*
+            这里如果使用的是opsForHash().put方法放置的值直接使用redisTemplate.execute方式是取不到值的
+            只能使用opsForHash()方式的get()方式，从存储的内容来看是因为官方提供的 redisTemplate.opsForHash().put()方法
+            在对值进行存储时 "TestHash" 将双引号也包含了进来，将给定对象序列化为二进制数据；如果直接使用 redisTemplate.execute -> connection.hSet 获取
+            则没有将对象序列化则直接转换为二进制存储。
+            put 源码如下
+            byte[] rawKey = rawKey(key);
+		    byte[] rawHashKey = rawHashKey(hashKey);
+		    byte[] rawHashValue = rawHashValue(value);
+
+		execute(connection -> {
+			connection.hSet(rawKey, rawHashKey, rawHashValue);
+			return null;
+		}, true);
+         */
+
+//        redisTemplate.opsForHash().put("TestHash", "FirstElement", "123");
+//        System.out.println(o);
+
+        byte[] execute = (byte[]) redisTemplate.execute((RedisCallback) connection ->
+                connection.hGet("TestHash".getBytes(StandardCharsets.UTF_8), "FirstElement".getBytes(StandardCharsets.UTF_8)));
+        assert execute != null;
+        System.out.println(new String(execute));
+    }
+
+
+    @Test
+    public void hIncrby() {
+        //  Hincrby 命令用于为哈希表中的字段值加上指定增量值。
+
+        // 如果哈希表的 key 不存在，一个新的哈希表被创建并执行 HINCRBY 命令
+        Long increment = redisTemplate.opsForHash().increment("TestHash22", "FirstElement", 5);
+        System.out.println(increment); // 返回hash自增的值
+
+
+
+    }
+
+
+
 
 }
