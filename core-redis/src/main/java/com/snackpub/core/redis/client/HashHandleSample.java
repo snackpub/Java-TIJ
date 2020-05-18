@@ -178,7 +178,6 @@ public class HashHandleSample extends BaseTest {
          */
 
 //        redisTemplate.opsForHash().put("TestHash", "FirstElement", "123");
-//        System.out.println(o);
 
         byte[] execute = (byte[]) redisTemplate.execute((RedisCallback) connection ->
                 connection.hGet("TestHash".getBytes(StandardCharsets.UTF_8), "FirstElement".getBytes(StandardCharsets.UTF_8)));
