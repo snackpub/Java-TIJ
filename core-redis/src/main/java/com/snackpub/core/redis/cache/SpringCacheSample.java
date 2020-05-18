@@ -2,10 +2,15 @@ package com.snackpub.core.redis.cache;
 
 import com.snackpub.core.redis.base.BaseInterface;
 import com.snackpub.core.redis.base.BaseTest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.SneakyThrows;
 import org.junit.Test;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisCallback;
+
+import javax.annotation.Resource;
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 
 /**
  * 集成Spring Cache
@@ -15,6 +20,8 @@ import org.springframework.cache.annotation.Cacheable;
  */
 public class SpringCacheSample extends BaseTest implements BaseInterface {
 
+    @Resource
+    private CacheService cacheService;
 
     @Test
     @Override
@@ -23,27 +30,68 @@ public class SpringCacheSample extends BaseTest implements BaseInterface {
     }
 
     @Override
+    @Test
     public void del() {
-
+        cacheService.cacheEvict(2L);
     }
 
+
+    /**
+     * 测试缓存
+     */
+    @SneakyThrows
     @Test
     @Override
     public void get() {
-        User user = new User("Snackpub科技公司","南京理工法学");
-        getUser(user);
+        User user = new User(1L, "Snackpub科技公司", "南京理工法学院");
+        cacheService.cacheable(user);
+
+        // 取出缓存
+        byte[] execute = (byte[]) redisTemplate.execute((RedisCallback) connection ->
+                connection.get("user::Snackpub科技公司".getBytes()));
+
+        assert execute != null;
+
+        // 反序列化
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(execute);
+        ObjectInputStream ois = new ObjectInputStream(inputStream);
+        Object obj = ois.readObject();
+        if (obj instanceof User) {
+            User u = (User) obj;
+            System.out.println(u.getCompany());
+        }
+
+
+        // 该代码不会生效
+        // getUser(user);
+    }
+
+    @SneakyThrows
+    @Test
+    public void cachePut() {
+        User user = new User(2L, "创发科技", "哈佛大学");
+        cacheService.cachePut(user);
+
+        byte[] bytes = (byte[]) redisTemplate.execute((RedisCallback) connection ->
+                connection.get(("user::" + user.getId()).getBytes())
+        );
+
+        // 反序列化
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+        ObjectInput ois = new ObjectInputStream(inputStream);
+        Object obj = ois.readObject();
+        if (obj instanceof User) {
+            User u = (User) obj;
+            System.out.println(u);
+        }
     }
 
 
-    @Cacheable(cacheNames = "user:edu", key = "#user.edu")
+    // 内部调用本类的方法，或者外部调用其它类的带有缓存注解的方法，缓存不会生效，写在接口中的实现类可以生效
+    @Cacheable(cacheNames = "user:company", key = "#user.company")
     public void getUser(User user) {
-        System.out.println("缓存成功： " + user);
+        System.out.println("SpringCacheSample.getUser-> execute");
     }
 
-    @AllArgsConstructor
-    @Data
-    private class User {
-        private String company;
-        private String edu;
-    }
+
 }
