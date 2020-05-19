@@ -69,21 +69,22 @@ public class SpringCacheSample extends BaseTest implements BaseInterface {
     @SneakyThrows
     @Test
     public void cachePut() {
-        User user = new User(2L, "创发科技", "哈佛大学");
+        User user = new User(2L, null, "哈佛大学");
+        // 测试condition 属性
         cacheService.cachePut(user);
 
-        byte[] bytes = (byte[]) redisTemplate.execute((RedisCallback) connection ->
-                connection.get(("user::" + user.getId()).getBytes())
-        );
-
-        // 反序列化
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-        ObjectInput ois = new ObjectInputStream(inputStream);
-        Object obj = ois.readObject();
-        if (obj instanceof User) {
-            User u = (User) obj;
-            System.out.println(u);
-        }
+//        byte[] bytes = (byte[]) redisTemplate.execute((RedisCallback) connection ->
+//                connection.get(("user::" + user.getId()).getBytes())
+//        );
+//
+//        // 反序列化
+//        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+//        ObjectInput ois = new ObjectInputStream(inputStream);
+//        Object obj = ois.readObject();
+//        if (obj instanceof User) {
+//            User u = (User) obj;
+//            System.out.println(u);
+//        }
     }
 
 

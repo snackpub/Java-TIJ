@@ -31,12 +31,13 @@ public class CacheServiceImpl implements CacheService {
 
     /**
      * CachePut 调用方法时 方法入参作为value 放入缓存
+     * condition 属性在方法执行前调用，如果 Spring Expression Language (SpEL) expression 表单式不成立则不会走缓存
      *
      * @param user u
      * @return STR
      */
     @Override
-    @CachePut(cacheNames = "user", key = "#user.id")
+    @CachePut(cacheNames = "user", key = "#user.id", condition = "#user.company!=null")
     public String cachePut(User user) {
         log.info("cachePut user successfully");
         return "cachePut user successfully";

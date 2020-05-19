@@ -35,7 +35,7 @@ cluster-node-timeout 15000 // 节点超时时间
 ##### 4. redis cluster 总结
 
 
-### redis 性能测试
+## redis 性能测试
 > 语法：redis-benchmark [option] [option value]
 
 *注意：该命令是在 redis 的目录下执行的，而不是 redis 客户端的内部指令*
@@ -91,3 +91,29 @@ redis 性能测试工具可选参数如下所示：
 1. 范围分区
 
 2. 哈希分区
+
+## 常用命令
+
+
+## 数据模型
+
+
+## 数据结构
+
+
+## 存储
+redis 使用了两种文件格式：*全量数据*和*增量请求*。
+* 全量数据格式是把内存中的数据写入磁盘，便于下次读取文件进行加载。
+* 增量请求文件则是把内存中的数据序列化为操作请求，用于读取文件进行replay得到数据，序列化的操作包括
+SET,RPUSH,SADD,ZADD.
+* Redis的存储分为内存存储，磁盘存储和log文件三部分，配置文件中有三个参数对其进行配置。
+  * save seconds updates，save配置，指出在多长时间内，有多少次更新操作，就将数据同步到数据文件。
+这个可以多个条件配合，比如默认配置文件中的设置，就设置了三个条件.
+  * appendonly yes/no,appendonly 配置,指出是否每次更新操作后进行日志记录,如果不开启,可能在断电
+  时导致一段时间内的数据丢失.因为redis本身同步数据文件是按上面的save条件进行同步的,所有的数据在
+  一段时间内只会存于内存中.
+  * appendfsync no/always/everysec, appendfsync配置,no 配置等操作系统j进行数据缓存同步到磁盘
+   always表示每次更新操作后手动调用fsync()将数据写到磁盘,everysec表示每秒同步一次.
+
+
+
