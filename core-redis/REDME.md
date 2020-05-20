@@ -99,6 +99,14 @@ redis 性能测试工具可选参数如下所示：
 
 
 ## 数据结构
+redis 的外围由一个键/值映射的字段构成。与其它非关系型数据库主要不同在于：redis中值的类型不仅限于字符串，
+还支持如下抽象数据类型：
+ * 字符串列表
+ * 无序不重复的字符串集合
+ * 有序不重复的字符串集合
+ * 键值都为字符串的哈希表      
+
+值的类型决定值本身支持的操作。redis支持不同无序，有序的列表，无序有序的集合间的交集，并集等高级服务器端原子操作
 
 
 ## 存储
@@ -112,8 +120,8 @@ SET,RPUSH,SADD,ZADD.
   * appendonly yes/no,appendonly 配置,指出是否每次更新操作后进行日志记录,如果不开启,可能在断电
   时导致一段时间内的数据丢失.因为redis本身同步数据文件是按上面的save条件进行同步的,所有的数据在
   一段时间内只会存于内存中.
-  * appendfsync no/always/everysec, appendfsync配置,no 配置等操作系统j进行数据缓存同步到磁盘
-   always表示每次更新操作后手动调用fsync()将数据写到磁盘,everysec表示每秒同步一次.
+  * appendfsync no/always/everysec, appendfsync配置,no 配置等操作系统进行数据缓存同步到磁盘
+   ,always表示每次更新操作后手动调用fsync()将数据写到磁盘,everysec表示每秒同步一次.
 
 
 

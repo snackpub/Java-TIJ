@@ -28,8 +28,8 @@ public class HyperLogLogSample extends BaseTest {
 
     @Test
     public void testGet() {
-        Long snackpub = redisTemplate.opsForHyperLogLog().size("snackpub");
-        System.out.println(snackpub);
+        Long size = redisTemplate.opsForHyperLogLog().size("snackpub");
+        System.out.println(size);
     }
 
 
