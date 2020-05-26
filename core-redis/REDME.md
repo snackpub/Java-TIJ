@@ -96,6 +96,45 @@ redis 性能测试工具可选参数如下所示：
 
 
 ## 数据模型
+**string** 是最简单的类型，一个key对应一个value。
+string 类型是二进制安全的。意思是 redis 的 string 可以包含任何数据，比如 jpg 图片 或者序列化的
+对象。从内部是西安来看 string 可以看作 byte 数组，最大上限是 1G 字节，下面是 string 的定义：
+```
+struct sdshdr {
+    long len;
+    long free;
+    char buf[];
+};
+```
+len 是 buf 数组的长度。  
+free 是数组中剩余可用字节数，由此可以理解为什么string 类型是二进制安全的了，因为它本质上就是个byte数组。  
+buf 是个 char 数组，用于存储实际的字符串内容，其实 char 跟 c# 中的byte是等价的，都是一个字节。  
+另外 string 类型可以被部分命令按 int 处理.比如 incr 等命令，如果只用 string 类型，redis 就
+可以被看作加上持久化特性的 memcached。当然 redis 对 string 类型的操作比 memcached 还 是多很多的，具体操作方法如下：
+
+**hashes**  是一个 string 类型的 field 和 value 的映射表.它的添加、删除操作都是 O(1)（平均）。
+           hash 特别适合用于存储对象。相较于将对象的每个字段存成单个 string 类型。将一个对象存
+           储在 hash 类型中会占用更少的内存，并且可以更方便的存取整个对象。省内存的原因是新
+           建一个 hash 对象时开始是用 zipmap（又称为 small hash）来存储的。这个 zipmap 其实并不
+           是 hash table，但是 zipmap 相比正常的 hash 实现可以节省不少 hash 本身需要的一些元数据
+           存储开销。尽管 zipmap 的添加，删除，查找都是 O(n)，但是由于一般对象的 field 数量都不
+           太多。所以使用 zipmap 也是很快的,也就是说添加删除平均还是 O(1)。如果 field 或者 value
+           的大小超出一定限制后，Redis 会在内部自动将 zipmap 替换成正常的 hash 实现. 这个限制可
+           以在配置文件中指定
+           hash-max-zipmap-entries 64 #配置字段最多 64 个
+           hash-max-zipmap-value 512 #配置 value 最大为 512 字节
+
+**lists**   是一个链表结构，主要功能是 push、pop、获取一个范围的所有值等等，操作中 key 理
+            解为链表的名字。
+            Redis 的 list 类型其实就是一个每个子元素都是 string 类型的双向链表。链表的最大长度是(2
+            的 32 次方)。我们可以通过 push,pop 操作从链表的头部或者尾部添加删除元素。这使得 list
+            既可以用作栈，也可以用作队列。
+            有意思的是 list 的 pop 操作还有阻塞版本的，当我们[lr]pop 一个 list 对象时，如果 list 是空，
+            或者不存在，会立即返回 nil。但是阻塞版本的 b[lr]pop 可以则可以阻塞，当然可以加超时时
+            间，超时后也会返回 nil。为什么要阻塞版本的 pop 呢，主要是为了避免轮询。举个简单的
+            例子如果我们用 list 来实现一个工作队列。执行任务的 thread 可以调用阻塞版本的 pop 去获
+            取任务这样就可以避免轮询去检查是否有任务存在。当任务来时候工作线程可以立即返回，
+            也可以避免轮询带来的延迟。
 
 
 ## 数据结构

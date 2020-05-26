@@ -23,9 +23,27 @@ public class StringHandleSample extends BaseTest {
         stringRedisTemplate.opsForValue().set("test-string-value2", "Hello Redis2");
     }
 
+    /**
+     * 如果 key 已经存在，返回 0(false)，修改不生效，nx 是 not exist 的意思
+     * setnx
+     */
+    @Test
+    public void setNotExist() {
+        Boolean bool = stringRedisTemplate.opsForValue().setIfAbsent("test-string-value", "Hello Redis_new");
+        System.out.println(bool);
+
+    }
+
+
     @Test
     public void getStr() {
         String value = stringRedisTemplate.opsForValue().get("test-string-value");
+
+        // ：获取存储在{@code key}的值的长度
+        Long size = stringRedisTemplate.opsForValue().size("test-string-value");
+
+        System.out.println("size: " + size);
+
         System.out.println(value);
     }
 
@@ -35,6 +53,7 @@ public class StringHandleSample extends BaseTest {
      */
     @Test
     public void mgetStr() {
+        // stringRedisTemplate.opsForValue().multiSet();
         List<String> keys = Stream.of("test-string-value", "test-string-value2").collect(Collectors.toList());
         List<String> multiGet = stringRedisTemplate.opsForValue().multiGet(keys);
         assert multiGet != null;
@@ -55,6 +74,16 @@ public class StringHandleSample extends BaseTest {
         System.out.println(rightSubValue);
 
     }
+
+    /**
+     * 给指定 key 的字符串值追加 value,返回新字符串值的长度。
+     */
+    @Test
+    public void append() {
+        Integer newLen = stringRedisTemplate.opsForValue().append("test-string-value", "_append");
+        System.out.println(newLen);
+    }
+
 
     @Test
     public void setTimeOut() {

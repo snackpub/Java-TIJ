@@ -15,6 +15,8 @@ import javax.validation.constraints.AssertTrue;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 操作Hash
@@ -39,13 +41,24 @@ public class HashHandleSample extends BaseTest {
 
     @Test
     public void testPut() {
-        // hash 新增元素
+        // hash 新增元素 hset
         redisTemplate.opsForHash().put("TestHash", "FirstElement", new User(170.0, 130.0));
-        // 判断指定 key 对应的 Hash 中是否存在指定的 map 键
+        // 判断指定 key 对应的 Hash 中是否存在指定的 map 键  hExists
         Assert.assertTrue(redisTemplate.opsForHash().hasKey("TestHash", "FirstElement"));
 
     }
 
+
+    /**
+     * 仅当{@code hashKey}不存在时才设置一个散列{@code hashKey}的{@code值}。
+     */
+    @Test
+    public void hsetnx() {
+        // hsetnx
+        Boolean ifAbsent = redisTemplate.opsForHash().putIfAbsent("test-string-value", "key1", "value2");
+        Assert.assertTrue(ifAbsent);
+
+    }
 
     @Test
     public void testGet() {
@@ -63,6 +76,13 @@ public class HashHandleSample extends BaseTest {
             put("user-three", new User(300.0, 3000.0));
         }});
         redisTemplate.opsForHash().putAll("putAllTest", hvs);
+
+
+        List<String> hasKeys = Stream.of("user-one", "user-two").collect(Collectors.toList());
+
+        // hmget
+        List<User> users = redisTemplate.opsForHash().multiGet("putAllTest", hasKeys);
+        users.forEach(System.out::println);
 
     }
 
@@ -195,10 +215,15 @@ public class HashHandleSample extends BaseTest {
         System.out.println(increment); // 返回hash自增的值
 
 
-
     }
 
+    @Test
+    public void hkeys() {
+        // 获取散列在{@code key}的键集(字段)。  窘迫其
+        Set<String> keys = redisTemplate.opsForHash().keys("putAllTest");
+        keys.forEach(System.out::println);
 
+    }
 
 
 }
