@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
  * @author snackpub
  * @date 2020/4/28
  * @date 2020/5/27
+ * @date 2020/5/28
  */
 public class SetHandleSample extends BaseTest {
 
@@ -53,6 +55,19 @@ public class SetHandleSample extends BaseTest {
         // testSet.stream().findFirst().get()
         assert testSet != null;
         Assert.assertEquals("c", testSet.toArray()[testSet.size() - 1]);
+    }
+
+    @Test
+    public void testSmove() {
+        // smove 从第一个 key 对应的 set 中移除 member 并添加到第二个对应 set 中
+        boolean bool = redisTemplate.opsForSet().move("testSet", "c", "testSetSmove");
+        Assert.assertTrue(bool);
+        Set<String> testSetSmove = redisTemplate.opsForSet().members("testSetSmove");
+        assert testSetSmove != null;
+        Optional<String> first = testSetSmove.stream().findFirst();
+        Assert.assertTrue(first.isPresent());
+        System.out.println(first.get());
+
     }
 
     @Test
@@ -118,12 +133,21 @@ public class SetHandleSample extends BaseTest {
     }
 
     @Test
+    public void testIntersectAndStore() {
+        // IntersectAndStore 获取2个变量交集后保存到最后一个参数上
+        redisTemplate.opsForSet().intersectAndStore("testSet", "testSet2", "testSet4");
+        Set<String> intersect = redisTemplate.opsForSet().members("testSet4");
+        assert intersect != null;
+        intersect.forEach(System.out::println);
+    }
+
+    @Test
     public void testUnion() {
-        // union 联合多个key组成集合
+        // sunion 联合多个key组成集合, 不重复
         Set testSet = redisTemplate.opsForSet().union("testSet", "testSet2");
-        Iterator iterator = testSet.iterator();
-        while (iterator.hasNext()) {
-            System.out.println(iterator.next());
+        assert testSet != null;
+        for (Object o : testSet) {
+            System.out.println(o);
         }
     }
 
@@ -132,17 +156,26 @@ public class SetHandleSample extends BaseTest {
         // unionAndStore 获取2个变量合集后保存到最后一个参数上
         redisTemplate.opsForSet().unionAndStore("testSet", "testSet2", "testSet3");
         Set<String> testSet3 = redisTemplate.opsForSet().members("testSet3");
+        assert testSet3 != null;
         testSet3.forEach(System.out::println);
     }
 
 
     @Test
-    public void testIntersectAndStore() {
-        // IntersectAndStore 获取2个变量交集后保存到最后一个参数上
-        redisTemplate.opsForSet().intersectAndStore("testSet", "testSet2", "testSet4");
-        Set<String> intersect = redisTemplate.opsForSet().members("testSet4");
-        intersect.forEach(System.out::println);
+    public void testScard() {
+        // scard 返回名称为 key 的 set 的元素个数
+        Long len = redisTemplate.opsForSet().size("testSet3");
+        System.out.println(len);
+
     }
 
+    @Test
+    public void testSismember() {
+        // sIsMember 测试 member 是否是名称为 key 的 set 的元素
+        Boolean member = redisTemplate.opsForSet().isMember("testSetSmove", "c");
+        Assert.assertTrue(member);
+    }
+
+    // srandmember
 
 }
