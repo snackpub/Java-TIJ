@@ -1,19 +1,73 @@
-# Redis cluster
+# Redis 
 
-##### 1. 搭建Redis Cluster
+##### Redis Cluster
+* 由多个Redis服务器组成的分布式网络服务集群  
+* 集群之中有多个Master主节点，每一个主节点都可读可写  
+* 节点之间会互相通信，两两相连
+* Redis集群无中心节点
+
+***分区和槽slot***  
+redis cluster中有一个16384（2^4 * 2^10）长度的槽的概念。通过哈希算法再加上取模运算可以将一个值固定地映射到某个区间，区间由连续的slot组成。   
+redis cluster采用虚拟槽分区，所有的键根据哈希函数(CRC16[key]&16383)映射到0－16383槽内，共16384个槽位，每个节点维护部分槽及槽所映射的键值数据  
+哈希函数: Hash()=CRC16[key]&16383 按位与  
+redis用虚拟槽分区原因：解耦数据与节点关系，节点自身维护槽映射关系，分布式存储
+
+***安装ruby环境***   
+【Ruby install】    
+【redis-trib.rb，此脚本是ruby脚本，它依赖ruby环境】  
 
 
-##### 2. redis cluster 配置文件配置
+***redis cluster 配置文件配置***  
+[Windows]  
+redis.windows.conf  
+[Linux]  
+redis.conf
 ```
+port xxxx // 不同的实例端口
+[daemonized  yes] # linux 模式下可配置
 appendonly yes // 启用追加模式持久性同步策略  
 cluster-enabled yes  // 启用redis集群配置  
 cluster-config-file nodes-6380.conf // 集群节点配置文件  
 cluster-node-timeout 15000 // 节点超时时间  
 ``` 
+其它配置，具体配置可查看文件本身注释，按需而配
 
-##### 3. 开发运维常见的问题
-    2.1 集群完整性
-        建议把cluster-require-full-coverage设置为no
+***分布式伪集群:*** 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 127.0.0.1:6385   
+F:\redis>```ruby redis-trib.rb create --replicas 1 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 127.0.0.1:6385```
+
+***redis-cli设置集群模式***    
+
+使用 -c 来启动集群实例的客户端。不然使用普通客户端set数据报错
+```redis-cli -c -h 127.0.0.1 -p 6381 [-a password]```  
+
+127.0.0.1:6380> info replication   # 查看集群信息  
+127.0.0.1:6380> cluster nodes   # 查看集群节点信息  
+127.0.0.1:6380> cluster info  # 查看集相关状态  
+
+Redis 集群会把数据存在一个 master 节点，然后在这个 master 和其对应的salve 之间进行数据同步。当读取数据时，也根据一致性哈希算法到对应的 master 节点获取数据。只有当一个master 挂掉之后，才会启动一个对应的 salve 节点，充当 master 
+必须要3个或以上的主节点，否则在创建集群时会失败，并且当存活的主节点数小于总节点数的一半时，整个集群就无法提供服务了
+>Creating cluster  创建集群  
+*** ERROR: Invalid configuration for cluster creation. 错误:集群创建的配置无效。    
+*** Redis Cluster requires at least 3 master nodes. Redis集群需要至少3个主节点。   
+*** This is not possible with 5 nodes and 1 replicas per node. 这对于每个节点5个节点和1个副本是不可能的。   
+*** At least 6 nodes are required. 至少需要6个节点。
+
+***集群高可用***
+
+a、一个集群里面有M1、M2、M3三个节点，其中节点 M1包含 0 到 5500号哈希槽，节点M2包含5501 到 11000 号哈希槽，节点M3包含11001 到 16384号哈希槽。如果M2宕掉了，就会导致5501 到 11000 号哈希槽不可用，从而使整个集群不可用。
+
+b、一个集群里面有M1-S1、M2-S2、M3-S3六个主从节点，其中节点 M1包含 0 到 5500号哈希槽，节点M2包含5501 到 11000 号哈希槽，节点M3包含11001 到 16384号哈希槽。如果是M2宕掉，集群便会选举S2为新节点继续服务，整个集群还会正常运行。当M2、S2都宕掉了，这时候集群就不可用了。   
+当M2、S2都宕掉，其它集群抛出错误信息    
+[95460] 03 Jun 20:21:23.592 * Marking node c517a6f63e1b958f73ee545fb05155a00178e 1e6 as failing (quorum reached). (标记节点c517a6f63e1b958f73ee545fb05155a00178e1e6失败(达到法定人数))  
+[95460] 03 Jun 20:21:23.602 # Cluster state changed: fail (集群状态改变:失败)  
+其它存活节点客户端在set数据抛出异常：  
+127.0.0.1:6382> set snack 'lsjg'
+(error) CLUSTERDOWN The cluster is down (错误)群集失败
+
+
+***开发运维常见的问题***  
+   * 集群完整性  
+        * 建议把cluster-require-full-coverage设置为no
    >By default Redis Cluster nodes stop accepting queries if they detect there
     is at least an hash slot uncovered (no available node is serving it).
     This way if the cluster is partially down (for example a range of hash slots
@@ -24,13 +78,23 @@ cluster-node-timeout 15000 // 节点超时时间
     covered. In order to do so, just set the cluster-require-full-coverage
     option to no.
     
-    2.2 带宽消耗
-    2.3 Pub/Sub广播
-    2.4 集群倾斜
-    2.5 集群读写分离
-    2.6 数据迁移
-    2.7 集群VS单机
+   * 带宽消耗
+   * Pub/Sub广播
+   * 集群倾斜
+   * 集群读写分离
+   * 数据迁移
+   * 集群VS单机
 
+***常用数据分布方式***
+  * 顺序分布
+ 
+  * 常用数据分布方式之哈希分布
+   
+  * 一致性哈希分区
+   
+  * 虚拟槽分区
+   
+  * 顺序分布与哈希分布的对比
 
 ##### 4. redis cluster 总结
 
@@ -183,5 +247,24 @@ SET,RPUSH,SADD,ZADD.
   * appendfsync no/always/everysec, appendfsync配置,no 配置等操作系统进行数据缓存同步到磁盘
    ,always表示每次更新操作后手动调用fsync()将数据写到磁盘,everysec表示每秒同步一次.
 
+## redis 管道
+
+**普通模式**
 
 
+
+**pipeline 管道模式**可以在服务端未响应时，客户端可以继续向服务端发送请求，并最终一次性读取所有服务端的响应  
+   ***Pipeline*** 是redis提高吞吐量的机制，适用于多key读写场景，会占用大量内存（用pipeline方式打包发送命令，redis必须
+  在处理完所有命令前先缓存所有命令的处理结果。打包的越多，缓存消耗的内存也越多）.   
+  使用pipeline性能提升的主要原因是 ***TCP*** 连接中减少了“交互往返” 时间。   
+  pipeline 期间独占 **链接**,此期间将不能进行非“管道”类型的其他操作，直到 pipeline 关闭；
+  如果你的 pipeline 的指令集很庞大，为了不干扰链接中的其他操作，*你可以为 pipeline 操作新建 Client 链接，
+  让 pipeline 和其他正常操作分离在2个 client 中*。不过 pipeline 事实上所能容忍的操作个数，
+  和 socket-output 缓冲区大小/返回结果的数据尺寸都有很大的关系；
+  同时也意味着每个 redis-server 同时所能支撑的 pipeline 链接的个数，也是有限的，
+  这将受限于 server 的物理内存或网络接口的缓冲能力。    
+  ***Pipeline*** 的实现原理是队列，而队列的原理是先进先出，这样就保证数据的循序性。  
+  ***Pipeline*** 的默认的同步的个数为53个，也就是说arges中累加到53条数据时会把数据提交。  
+  ***Pipeline*** 不适用于实时性高的场景
+  ***Pipeline***：管道本身就是能够承载流式数据的一个长链路  
+  
