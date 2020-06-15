@@ -313,3 +313,39 @@ SET,RPUSH,SADD,ZADD.
   ***Pipeline*** 不适用于实时性高的场景
   ***Pipeline***：管道本身就是能够承载流式数据的一个长链路  
   
+## 发布及订阅消息
+
+**redis 过期通知**
+首先启用  
+登陆redis-cli,输入命令：
+```config set notify-keyspace-events Ex[KEA]```
+
+订阅的key ```__keyevent@<db>__:expired ``` 这个格式是固定的，db代表的是数据库的编号，由于订阅开启之后这个库的所有key过期时间都会被推送过来，所以最好单独使用一个数据库来进行隔离。可以使用redis来处理定时任务一种思路
+```
+<!-- 配置监听 -->
+<bean class="org.springframework.data.redis.listener.adapter.MessageListenerAdapter" id="messageListener">
+	    <constructor-arg>
+	        <bean class="cn.itcast.redis.listener.RedisMessageListener"/>
+	    </constructor-arg>
+	</bean>
+	<!-- 监听容器 -->
+	<bean class="org.springframework.data.redis.listener.RedisMessageListenerContainer" id="redisContainer">
+	    <property name="connectionFactory" ref="connectionFactory"/>
+	    <property name="messageListeners">
+	    	<map>
+	            <entry key-ref="messageListener">
+	                <list>
+	                	<!-- 此处有坑  需要在Redis服务器命令行执行    config set notify-keyspace-events KEA -->
+	                	<!-- __keyevent@0__:expired  配置订阅的主题名称
+	                	此名称时redis提供的名称，标识过期key消息通知
+	                			0表示db0 根据自己的dbindex选择合适的数字
+	                	 -->
+	                    <bean class="org.springframework.data.redis.listener.ChannelTopic">
+	                        <constructor-arg value="__keyevent@0__:expired"></constructor-arg>
+	                    </bean>
+	                </list>
+	            </entry>
+		    </map>
+		 </property>
+	</bean>
+```
