@@ -14,7 +14,9 @@ public class LogClient {
         logBean.setLogId("1");
         logBean.setOpeUserId("001");
         List<LogBean> list = new ArrayList<LogBean>();
-        LogFileOperateApi logFileOperateApi = new LogFileOpterate("");
+        LogFileOpterate logFileOperateApi = new LogFileOpterate("");
+        /*logFileOperateApi.writeLogFile(list);
+        logFileOperateApi.readLogFile();*/
         LogDbOpeApi logDbOpeApi = new LogAdapter(logFileOperateApi);
         logDbOpeApi.createLog(logBean);
     }

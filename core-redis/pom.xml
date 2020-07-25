@@ -18,6 +18,7 @@
         <java.version>1.8</java.version>
         <maven.plugin.version>3.8.1</maven.plugin.version>
         <mybatis.plus.version>3.3.1</mybatis.plus.version>
+        <spring.boot.version>2.2.6.RELEASE</spring.boot.version>
     </properties>
 
     <dependencies>
@@ -146,10 +147,6 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.plugin.version}</version>
