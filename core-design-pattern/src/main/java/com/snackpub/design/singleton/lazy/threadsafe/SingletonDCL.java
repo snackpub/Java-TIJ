@@ -22,22 +22,22 @@ public class SingletonDCL {
      * getInstance() 的性能对应用程序很关键。
      */
 
-    private volatile static SingletonDCL instace;
+    private volatile static SingletonDCL instance;
 
     private SingletonDCL() {
 
 
     }
 
-    public static SingletonDCL getInstace() {
-        if (instace == null) {
+    public static SingletonDCL getInstance() {
+        if (instance == null) {
             synchronized (SingletonDCL.class) {
-                if (instace == null) {
-                    instace = new SingletonDCL();
+                if (instance == null) {
+                    instance = new SingletonDCL();
                 }
             }
         }
-        return instace;
+        return instance;
     }
 
 }

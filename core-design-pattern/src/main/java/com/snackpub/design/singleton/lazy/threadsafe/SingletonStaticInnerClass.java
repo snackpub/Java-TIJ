@@ -28,7 +28,7 @@ public class SingletonStaticInnerClass {
      */
 
     private static class SingletonHolder {
-        private final static SingletonStaticInnerClass instance = new SingletonStaticInnerClass();
+        private final static SingletonStaticInnerClass INSTANCE = new SingletonStaticInnerClass();
     }
 
     private SingletonStaticInnerClass() {
@@ -36,7 +36,7 @@ public class SingletonStaticInnerClass {
     }
 
     public static final SingletonStaticInnerClass getInstance() {
-        return SingletonHolder.instance;
+        return SingletonHolder.INSTANCE;
     }
 
 }
