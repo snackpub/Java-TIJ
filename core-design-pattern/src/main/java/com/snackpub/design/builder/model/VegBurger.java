@@ -1,4 +1,6 @@
-package com.snackpub.design.builder;
+package com.snackpub.design.builder.model;
+
+import com.snackpub.design.builder.AbstractBurger;
 
 /**
  * 素食汉堡

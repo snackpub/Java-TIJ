@@ -1,4 +1,6 @@
-package com.snackpub.design.builder;
+package com.snackpub.design.builder.model;
+
+import com.snackpub.design.builder.AbstractColdDrink;
 
 /**
  * 可口可乐

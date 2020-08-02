@@ -1,5 +1,7 @@
 package com.snackpub.design.builder;
 
+import com.snackpub.design.builder.pack.Wrapper;
+
 /**
  * 实现 Item 接口的抽象类，该类提供了默认的功能
  *
