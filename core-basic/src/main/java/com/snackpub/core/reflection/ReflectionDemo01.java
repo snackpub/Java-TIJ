@@ -71,10 +71,6 @@ public class ReflectionDemo01 {
             name.set(person, "snackpub2");
 
             System.out.println(person.getName()); // print: snackpub2
-
-
-
-
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
