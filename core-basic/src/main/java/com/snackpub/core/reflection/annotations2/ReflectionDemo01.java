@@ -1,4 +1,4 @@
-package com.snackpub.core.reflection;
+package com.snackpub.core.reflection.annotations2;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -16,11 +16,11 @@ public class ReflectionDemo01 {
     public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
 
         // 通过Class.ForName方式加载,返回一个Class对象
-        Class<?> aClass = Class.forName("com.snackpub.core.reflection.Person");
-        System.out.println(aClass); //  print: class com.snackpub.core.reflection.Person
+        Class<?> aClass = Class.forName("com.snackpub.core.reflection.annotations2.Person");
+        System.out.println(aClass); //  print: class com.snackpub.core.reflection.annotations2.Person
 
         // 分别通过该类的有参构造和无参构造来实例化对象
-        Class<?> studentClass = Class.forName("com.snackpub.core.reflection.Person"); //加载类
+        Class<?> studentClass = Class.forName("com.snackpub.core.reflection.annotations2.Person"); //加载类
         Person person = (Person) studentClass.newInstance();// 通过无参构造函数来实例化对象
         person.setAge(10);
         person.setSex("男");
@@ -61,7 +61,7 @@ public class ReflectionDemo01 {
         // 获取公开的属性
         try {
             Field name = studentClass.getDeclaredField("name");
-            //抛出异常 Class com.snackpub.core.reflection.ReflectionDemo01 can not access a member of class com.snackpub.core.reflection.Person with modifiers "private"
+            //抛出异常 Class com.snackpub.core.reflection.annotations2.ReflectionDemo01 can not access a member of class com.snackpub.core.reflection.annotations2.Person with modifiers "private"
             /*
              * 不能对私有的属性直接反射,解决方法就是抑制Java语言访问检查
              * 将该对象的可访问标志设置为指定的布尔值。true表示被反射的对象在使用时应该抑制Java语言访问检查。false表示被反射的对象应该执行Java语言访问检查。

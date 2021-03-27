@@ -1,4 +1,4 @@
-package com.snackpub.core.reflection;
+package com.snackpub.core.reflection.annotations2;
 
 public class Person {
 
