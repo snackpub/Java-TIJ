@@ -66,9 +66,7 @@ public class UniqueWords {
             System.out.println();
         });
 
-        mapSum.forEach((k, v) -> {
-            System.out.println(k + "共" + v + "个");
-        });
+        mapSum.forEach((k, v) -> System.out.println(k + "共" + v + "个"));
 //        System.out.println(map2);
     }
 
