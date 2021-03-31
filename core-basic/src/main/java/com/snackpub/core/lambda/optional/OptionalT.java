@@ -1,5 +1,8 @@
 package com.snackpub.core.lambda.optional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -16,7 +19,7 @@ public class OptionalT {
 //        findFirst();
         getLength("snackpub");
         getLength(null);
-
+        getList(Arrays.asList("1","2"));
     }
 
     public static void print(String text) {
@@ -35,6 +38,12 @@ public class OptionalT {
         OptionalT.print(n + "");
         // Pre-Java 8
         // return if(text!=null) ? text.length() : -1;
+    }
+
+
+    public static void getList(Collection<?> collection) {
+        Collection<?> objects = Optional.ofNullable(collection).orElse(new ArrayList<>());
+        System.out.println(objects);
     }
 
     /**
