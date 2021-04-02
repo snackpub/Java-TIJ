@@ -53,6 +53,8 @@ public class HigherOrderFunction {
         // 重用一个Predicate，让代码更富裕表达
         Predicate<Integer> isGreaterThan50 = n -> n > 50;
 
+//        Predicate<Integer> isGreaterThan40 = a -> a > 40;
+
         List<Integer> collect = numbers1.stream()
                 .filter(isGreaterThan50)
                 .collect(toList());
@@ -125,7 +127,7 @@ public class HigherOrderFunction {
         };
 
         // 现在可以看到，外部 lambda 表达式的主体也只有一行，所以 {} 和 return 在这里也是多余的。在这里，我们应用最后一次重构：
-        Function<Integer,Predicate<Integer>> isGreaterThan$3 = pivot -> candidate -> candidate > pivot;
+        Function<Integer, Predicate<Integer>> isGreaterThan$3 = pivot -> candidate -> candidate > pivot;
         // 现在可以看到 — 这是我们的级联 lambda 表达式
     }
 

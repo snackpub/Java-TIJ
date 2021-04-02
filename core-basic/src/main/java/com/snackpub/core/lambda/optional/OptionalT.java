@@ -16,7 +16,7 @@ public class OptionalT {
 //        print("admin");
 //        print("");
 
-//        findFirst();
+        findFirst();
         getLength("snackpub");
         getLength(null);
         getList(Arrays.asList("1","2"));

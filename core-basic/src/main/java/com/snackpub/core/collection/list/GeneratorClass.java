@@ -13,8 +13,8 @@ import java.util.*;
  */
 public class GeneratorClass implements Iterable<String> {
 
-    private String[] movieName = ("天鹅湖,复仇者联盟,三体,数学之美").split(",");
-    private int maxLength = movieName.length;
+    private final String[] movieName = ("天鹅湖,复仇者联盟,三体,数学之美").split(",");
+    private final int maxLength = movieName.length;
     private int i = 0;
 
     public String next() {
