@@ -15,9 +15,7 @@ public abstract class PetCreator {
     int n = rand.nextInt(types().size());
     try {
       return types().get(n).newInstance();
-    } catch(InstantiationException e) {
-      throw new RuntimeException(e);
-    } catch(IllegalAccessException e) {
+    } catch(InstantiationException | IllegalAccessException e) {
       throw new RuntimeException(e);
     }
   }	
