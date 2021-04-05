@@ -8,5 +8,10 @@ public class HelloDate {
         System.out.println(new Date());
 
         System.out.println("A String of things");
-    }
+
+        int i = ~15;
+        System.out.println(i);
+    }/*Output
+    0
+    *///:~
 }
