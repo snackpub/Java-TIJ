@@ -1,12 +1,14 @@
 package com.snackpub.core.lambda;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * map/flatMap
+ * map(映射)/flatMap(映射汇总)
  *
  * @author snackpub
  * @date 2020/4/11 10:28
@@ -21,6 +23,7 @@ public class Streammap {
         // 上面的方法都是1：1映射，按照特定的规则转换为另一个元素
         // 其他场景就是1：N 映射，需要flatMap
         flatMapTest();
+        flatMapTest2();
     }
 
     /**
@@ -53,7 +56,24 @@ public class Streammap {
                 Arrays.asList(6, 7)
         );
 
-        Stream<Integer> outputStream = inputStream.flatMap((childList) -> childList.stream());
+        Stream<Integer> outputStream = inputStream.flatMap(Collection::stream);
+        outputStream.forEach(System.out::println);
+        // flatMap把inputStream中的结构扁平化，就是将最底层元素抽取出来放到一起；最终output出新的stream
+        // 里面已经没有List了，都是直接的数字 Stream<Integer>
+    }
+
+
+    public static void flatMapTest2() {
+        List<String> list = Arrays.asList("aaa", "bbb", "ddd", "eee", "ccc");
+        //采用flatMap来做  体会一下flatMap的魅力吧
+        list.stream().flatMap(x -> {
+            List<Character> characterList = new ArrayList<>();
+            char[] chars = x.toCharArray();
+            for (char c : chars) {
+                characterList.add(c);
+            }
+            return characterList.stream();
+        }).forEach(System.out::print); //aaabbbdddeeeccc
         // flatMap把inputStream中的结构扁平化，就是将最底层元素抽取出来放到一起；最终output出新的stream
         // 里面已经没有List了，都是直接的数字 Stream<Integer>
     }

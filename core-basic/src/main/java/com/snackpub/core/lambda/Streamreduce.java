@@ -1,5 +1,6 @@
 package com.snackpub.core.lambda;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -34,5 +35,20 @@ public class Streamreduce {
         System.out.println("minValue: " + minValue);
         System.out.println("strConcat：" + strConcat);
         System.out.println("filterStrConcat：" + filterStrConcat);
+
+
+        // 重点说说三个参数的reduce(U identity, BiFunction a, BinaryOperator combiner)
+        ArrayList<Object> reduce1 = Stream.of("aa", "ab", "c", "ad").reduce(new ArrayList<>(), (u, s) -> {
+            u.add(s);
+            return u;
+        }, (strings, strings2) -> strings);
+        System.out.println(reduce1);
+
+        Integer reduce2 = Stream.of(1, 2, 3).parallel().reduce(
+                4,
+                Integer::sum,
+                (integer, integer2) -> integer + integer2);
+        System.out.println(reduce2); //18
+
     }
 }

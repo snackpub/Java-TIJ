@@ -3,7 +3,6 @@ package com.snackpub.core.lambda;
 import com.snackpub.core.lambda.model.Person;
 import com.snackpub.core.lambda.supplier.PersonSupplier;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;

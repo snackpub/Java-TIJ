@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,9 +19,14 @@ import java.util.stream.Stream;
 public class StreamMinMaxDistinct {
 
     public static void main(String[] args) {
-//        max();
+        max();
         distinct();
     }
+
+
+
+
+
 
 
     /**
@@ -40,7 +44,7 @@ public class StreamMinMaxDistinct {
     }
 
     /**
-     * 找出全文的单词，转小写，并排序
+     * 找出全文的单词，转小写，去除重复，并排序
      */
     @SneakyThrows
     public static void distinct() {

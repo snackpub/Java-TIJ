@@ -26,6 +26,7 @@ public class StreamGenerate {
      * 生成 10 个随机整数
      */
     public static void random() {
+        // test
         Random seed = new Random();
         Supplier<Integer> random = seed::nextInt;
         Stream.generate(random).limit(10).forEach(System.out::println);
