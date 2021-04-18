@@ -30,7 +30,8 @@ Class.forName("ClassName")
 <br>
 &ensp;&ensp;如果Class.forName()找不到你要加载的类，它会抛出异常**ClassNotFoundException**。
 <br>
-&ensp;&ensp;Class.formName()不需要为了获得Class引用而持有该类型的对象。但是如果你有一个感兴趣的类型了，可以
-通过调用**getClass()** 方法来获取Class引用，这个方法属于Object的一部分，它将返回该对象的实际类型的Class引用。
+&ensp;&ensp;Class.formName()不需要为了获得Class引用而持有该类型的对象。但是如果你有一个感兴趣的类型了，可以通过调用**getClass()** 方法来获取Class引用，这个方法属于Object的一部分，它将返回该对象的实际类型的Class引用。
+
+
 ## 类型转换前先做检查
 
