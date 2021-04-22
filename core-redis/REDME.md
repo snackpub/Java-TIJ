@@ -74,6 +74,21 @@ cluster-enabled yes  // 启用redis集群配置
 cluster-config-file nodes-6380.conf // 集群节点配置文件  
 cluster-node-timeout 15000 // 节点超时时间  
 ``` 
+
+start.bat 配置
+```
+@echo on
+title redis-server
+color 0a
+redis-server.exe redis.windows.conf
+@pause
+```
+
+配置不正确会运行失败，检查空格跟配置的参数是否正确
+```
+执行 redis-server.exe redis.windows.conf 报配置文件参数错误
+invalid argument during startup:unknown conf file parameter : 
+```
 其它配置，具体配置可查看文件本身注释，按需而配
 
 ***分布式伪集群:*** 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 127.0.0.1:6385   
