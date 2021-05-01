@@ -74,8 +74,24 @@ cluster-enabled yes  // 启用redis集群配置
 cluster-config-file nodes-6380.conf // 集群节点配置文件  
 cluster-node-timeout 15000 // 节点超时时间  
 ``` 
+
+start.bat 配置
+```
+@echo on
+title redis-server
+color 0a
+redis-server.exe redis.windows.conf
+@pause
+```
+
+配置不正确会运行失败，检查空格跟配置的参数是否正确
+```
+执行 redis-server.exe redis.windows.conf 报配置文件参数错误
+invalid argument during startup:unknown conf file parameter : 
+```
 其它配置，具体配置可查看文件本身注释，按需而配
 
+启动所有redis的实例，然后执行create --replicas
 ***分布式伪集群:*** 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 127.0.0.1:6385   
 F:\redis>```ruby redis-trib.rb create --replicas 1 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 127.0.0.1:6385```
 
@@ -95,6 +111,46 @@ Redis 集群会把数据存在一个 master 节点，然后在这个 master 和�
 *** Redis Cluster requires at least 3 master nodes. Redis集群需要至少3个主节点。   
 *** This is not possible with 5 nodes and 1 replicas per node. 这对于每个节点5个节点和1个副本是不可能的。   
 *** At least 6 nodes are required. 至少需要6个节点。
+
+1fa2ad206ad3c4b1ce11e15c19da4c8199ea8010 127.0.0.1:6384 slave 90d953db8fbcc0ca999429683d6667b17d11f824  
+1fa2ad206ad3c4b1ce11e15c19da4c8199ea8010当前节点的ID标识,slave表示从节点，master标识主节点, 90d953db8fbcc0ca999429683d6667b17d11f824表示指向的master的ID标识
+```
+127.0.0.1:6380>  cluster nodes
+1fa2ad206ad3c4b1ce11e15c19da4c8199ea8010 127.0.0.1:6384 slave 90d953db8fbcc0ca999429683d6667b17d11f824 0 1619057422784 2 connected
+0d7279d8c21537213958c8d28b50dd85920a3e51 127.0.0.1:6379 master - 0 1619057426006 1 connected 0-5460
+90d953db8fbcc0ca999429683d6667b17d11f824 127.0.0.1:6380 myself,master - 0 0 2 connected 5461-10922
+86e5aef1164f1bf0543001326df9eb10c39eb0b2 127.0.0.1:6381 master - 0 1619057428124 3 connected 10923-16383
+0cbe56e08adec063e5d44191a9060f3234cc3cd8 127.0.0.1:6382 slave 86e5aef1164f1bf0543001326df9eb10c39eb0b2 0 1619057427041 3 connected
+a533dbedebf3107d770ef018c59adc1a00af6ac1 127.0.0.1:6383 slave 0d7279d8c21537213958c8d28b50dd85920a3e51 0 1619057424937 5 connected
+```
+
+
+***redis nodes-xxx.conf文件***
+集群中的每一个节点都有这个文件，存储着集群中每一个节点的信息:节点的角色、节点的ID、连接状态、slot范围、IP/PORT信息等
+
+***redis中集群一致性问题***
+
+主从同步有时延，这个时延期间读从库，可能读到不一致的数据。（脏数据）
+解决方案：
+1. 强制读master,提供高可用的master集群，读和写都落到主库上
+2. 
+
+
+***在线水平扩展***
+利用 add-node 把实例添加到集群中。
+```
+./redis-trib.rb add-node 192.168.99.121:8007 192.168.99.121:8006
+```
+新加入到集群中的节点不可以存储数据，需要为新节点分配slot槽。
+```
+./redis-trib.rb reshard 192.168.99.121:8007
+```
+slot都分配在master上,从集群的masters上进行重新分配,上面的命令需要指定一个master节点进行reshard分片。
+
+slot 重新分配
+
+***删除节点***
+一定要先删除主节点，再删除从节点，要不然故障转移会生效。
 
 ***集群高可用***
 
@@ -201,6 +257,23 @@ redis 性能测试工具可选参数如下所示：
 
 2. 哈希分区
 
+3. 虚拟槽分区  
+	虚拟槽分区是Redis Cluster采用的分区方式  
+	预设虚拟槽，每个槽就相当于一个数字，有一定范围。每个槽映射一个数据子集，一般比节点数大  
+	Redis Cluster中预设虚拟槽的范围为0到16383   
+	1.把16384槽按照节点数量进行平均分配，由节点进行管理  
+	2.对每个key按照CRC16规则进行hash运算  
+	3.把hash结果对16383进行取余   
+	4.把余数发送给Redis节点   
+	5.节点接收到数据，验证是否在自己管理的槽编号的范围  
+	    如果在自己管理的槽编号范围内，则把数据保存到数据槽中，然后返回执行结果  
+	    如果在自己管理的槽编号范围外，则会把数据发送给正确的节点，由正确的节点来把数据保存在对应的槽中  
+	需要注意的是：Redis Cluster的节点之间会共享消息，每个节点都会知道是哪个节点负责哪个范围内的数据槽  
+	虚拟槽分布方式中，由于每个节点管理一部分数据槽，数据保存到数据槽中。当节点扩容或者缩容时，对数据槽进行重新分配迁移即可，数据不会丢失。  
+	虚拟槽分区特点：   
+	使用服务端管理节点，槽，数据：例如Redis Cluster  
+	可以对数据打散，又可以保证数据分布均匀  
+	
 ## 常用命令
 
 
@@ -290,6 +363,11 @@ SET,RPUSH,SADD,ZADD.
 * Redis的存储分为内存存储，磁盘存储和log文件三部分，配置文件中有三个参数对其进行配置。
   * save seconds updates，save配置，指出在多长时间内，有多少次更新操作，就将数据同步到数据文件。
 这个可以多个条件配合，比如默认配置文件中的设置，就设置了三个条件.
+  ```
+  	save 900 1
+	save 300 10
+	save 60 10000
+  ```
   * appendonly yes/no,appendonly 配置,指出是否每次更新操作后进行日志记录,如果不开启,可能在断电
   时导致一段时间内的数据丢失.因为redis本身同步数据文件是按上面的save条件进行同步的,所有的数据在
   一段时间内只会存于内存中.

@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.ScanOptions;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class PipeLineSample extends BaseTest {
     @Test
     public void pipeLineExecute() {
         long start = System.currentTimeMillis();
-        List execute = redisTemplate.executePipelined(new RedisCallback<Long>() {
+        List<Object> execute = redisTemplate.executePipelined(new RedisCallback<Long>() {
             @Override
             public Long doInRedis(RedisConnection connection) throws DataAccessException {
                 // 可调用可不调用
@@ -60,9 +61,9 @@ public class PipeLineSample extends BaseTest {
     public void common() {
         long start = System.currentTimeMillis();
         redisTemplate.execute((RedisCallback) connection -> {
-            for (int i = 0; i < 100000; i++) {
+            for (int i = 0; i < 10; i++) {
                 // connection.zAdd((i + "").getBytes(), i + 1, ("123" + i).getBytes());
-                connection.set(("" + i).getBytes(), (i + 1 + "").getBytes());
+                connection.lPush(("test:" + i).getBytes(), (i + 1 + "").getBytes());
             }
             return null;
         });
@@ -77,33 +78,73 @@ public class PipeLineSample extends BaseTest {
 
     /**
      * 从管道流获取数据
+     *
      */
     @Test
     public void getPipeline() {
         long start1 = System.currentTimeMillis();
+
+        Set keys = redisTemplate.keys("test*");
+        System.out.println(keys);
+
         Set<byte[]> list = (Set<byte[]>) redisTemplate.execute((RedisCallback) connection ->
-                connection.keys("10*".getBytes())
+                connection.keys("test*".getBytes())
         );
-        //   Set<String> collect = list.stream().map(n -> new String(n)).collect(Collectors.toSet());
-        //  换成构造器引用
-        Set<String> collect = list.stream().map(String::new).collect(Collectors.toSet());
-       /* list.forEach(n->{
-            String s = new String(n);
-            System.out.println(s);
-        });*/
-        System.out.println(collect);
-        long end2 = System.currentTimeMillis();
-        log.info("the total time is: {} seconds", ((end2 - start1) % (1000 * 60)) / 1000);
-        System.out.println("---------------------------");
 
         long start = System.currentTimeMillis();
-        List<String> list1 = (List<String>) redisTemplate.executePipelined((RedisCallback) connection ->
-                connection.keys("10*".getBytes())
-        );
+        Set<byte[]> list1 = (Set<byte[]>)  redisTemplate.executePipelined((RedisCallback) connection -> {
+            // 管道一次只能处理一批相同的操作！
+            connection.keys("test*".getBytes()); // 这里会返回所有拿到的数据，不能将这里作为返回值return
+            return null; // 管道里面只能返回null
+        });
         System.out.println(list1);
         long end = System.currentTimeMillis();
         log.info("the total time is: {} seconds", ((end - start) % (1000 * 60)) / 1000);
 
+    }
+
+
+    /**
+     * 生产环境数据量比较多的时候容易造成阻塞！，禁用！
+     *
+     * @param pattern 匹配的模式
+     * @return set
+     */
+    public Set<String> keys(String pattern) {
+        try {
+            Set<String> keys = redisTemplate.keys(pattern);
+            return keys;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Scan 命令用于迭代数据库中的数据库键
+     *
+     * @param pattern 匹配的模式
+     * @param count   指定从数据集里返回多少元素，默认值为 10
+     * @return
+     */
+    public Set<String> scan(String pattern, Long count) {
+        try {
+            return (Set<String>) redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+                ScanOptions.ScanOptionsBuilder scanOptionsBuilder = ScanOptions.scanOptions();
+                scanOptionsBuilder.match(pattern);
+                scanOptionsBuilder.count(count);
+                Cursor<byte[]> scan = connection.scan(scanOptionsBuilder.build());
+                Set<String> result = new HashSet<>();
+                while (scan.hasNext()) {
+                    byte[] key = scan.next();
+                    result.add(new String(key));
+                }
+                return result;
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
