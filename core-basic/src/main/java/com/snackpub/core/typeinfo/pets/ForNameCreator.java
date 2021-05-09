@@ -9,25 +9,31 @@ public class ForNameCreator extends PetCreator {
           new ArrayList<>();
   // Types that you want to be randomly created:
   private static String[] typeNames = {
-    "typeinfo.pets.Mutt",
-    "typeinfo.pets.Pug",
-    "typeinfo.pets.EgyptianMau",
-    "typeinfo.pets.Manx",
-    "typeinfo.pets.Cymric",
-    "typeinfo.pets.Rat",
-    "typeinfo.pets.Mouse",
-    "typeinfo.pets.Hamster"
-  };	
+    "com.snackpub.core.typeinfo.pets.Mutt",
+    "com.snackpub.core.typeinfo.pets.Pug",
+    "com.snackpub.core.typeinfo.pets.EgyptianMau",
+    "com.snackpub.core.typeinfo.pets.Manx",
+    "com.snackpub.core.typeinfo.pets.Cymric",
+    "com.snackpub.core.typeinfo.pets.Rat",
+    "com.snackpub.core.typeinfo.pets.Mouse",
+    "com.snackpub.core.typeinfo.pets.Hamster"
+  };
   @SuppressWarnings("unchecked")
   private static void loader() {
-    try {
-      for(String name : typeNames)
+/*    try {
+     for(String name : typeNames)
         types.add(
           (Class<? extends Pet>)Class.forName(name));
     } catch(ClassNotFoundException e) {
       throw new RuntimeException(e);
-    }
+    }*/
+
+      types.addAll(PetCreator.types);
   }
   static { loader(); }
   public List<Class<? extends Pet>> types() {return types;}
+
+  public static void main(String[] args) {
+    System.out.println(types);
+  }
 } ///:~
