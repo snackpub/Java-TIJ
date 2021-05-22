@@ -41,8 +41,7 @@ class SimpleDynamicProxy {
         Interface proxy = (Interface) Proxy.newProxyInstance( // 创建动态代理
                 Interface.class.getClassLoader(), // param 1. 类加载器
                 new Class[]{Interface.class}, // param 2. 一个你希望代理实现的接口列表（不是类或抽象类）
-                new DynamicProxyHandler(realObject) // param 3. InvocationHandler接口的一个实现，动态代理可以将所有
-                // 处理重定向到调用处理器.
+                new DynamicProxyHandler(realObject) // param 3. InvocationHandler接口的一个实现，动态代理可以将所有处理重定向到调用处理器.
         );
         consumer(proxy);
     }
