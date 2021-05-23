@@ -6,6 +6,8 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 /**
+ * 动态代理
+ *
  * @author snackpub
  * @date 2021/5/9
  */
