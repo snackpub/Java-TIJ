@@ -36,11 +36,11 @@ public class PetCount {
         counter.count("Pug");
       if(pet instanceof Cat)
         counter.count("Cat");
-      if(pet instanceof Manx)
+      if(pet instanceof EgyptianMau)
         counter.count("EgyptianMau");
       if(pet instanceof Manx)
         counter.count("Manx");
-      if(pet instanceof Manx)
+      if(pet instanceof Cymric)
         counter.count("Cymric");
       if(pet instanceof Rodent)
         counter.count("Rodent");
