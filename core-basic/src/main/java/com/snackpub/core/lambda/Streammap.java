@@ -1,9 +1,6 @@
 package com.snackpub.core.lambda;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +21,7 @@ public class Streammap {
         // 其他场景就是1：N 映射，需要flatMap
         flatMapTest();
         flatMapTest2();
+        flatMapTest3();
     }
 
     /**
@@ -66,18 +64,31 @@ public class Streammap {
     public static void flatMapTest2() {
         List<String> list = Arrays.asList("aaa", "bbb", "ddd", "eee", "ccc");
         //采用flatMap来做  体会一下flatMap的魅力吧
+        System.out.println("------ flatMapTest2 ----------");
         list.stream().flatMap(x -> {
             List<Character> characterList = new ArrayList<>();
             char[] chars = x.toCharArray();
-            for (char c : chars) {
+            for (char c : chars)
                 characterList.add(c);
-            }
             return characterList.stream();
         }).forEach(System.out::print); //aaabbbdddeeeccc
         // flatMap把inputStream中的结构扁平化，就是将最底层元素抽取出来放到一起；最终output出新的stream
-        // 里面已经没有List了，都是直接的数字 Stream<Integer>
+        // 里面已经没有List了，都是直接的String Stream<String>
     }
 
+
+    /**
+     * 统计
+     */
+    public static void flatMapTest3() {
+        List<Integer> numbers = Arrays.asList(3, 2, 2, 3, 7, 3, 5);
+        IntSummaryStatistics intSummaryStatistics = numbers.stream().mapToInt((x) -> x).summaryStatistics();
+        System.out.println("\n------ flatMapTest3 ----------");
+        System.out.println("最大值" + intSummaryStatistics.getMax());
+        System.out.println("最小值" + intSummaryStatistics.getMin());
+        System.out.println("所有数之和" + intSummaryStatistics.getSum());
+        System.out.println("平均数" + intSummaryStatistics.getAverage());
+    }
 
     interface Print {
         void printInfo(String info);

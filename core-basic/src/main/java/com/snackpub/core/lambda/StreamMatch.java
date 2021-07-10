@@ -16,7 +16,7 @@ import java.util.List;
 public class StreamMatch {
 
     public static void main(String[] args) {
-        List<Person> persons = new ArrayList();
+        List<Person> persons = new ArrayList<>();
         persons.add(new Person(1, "name" + 1, 10));
         persons.add(new Person(2, "name" + 2, 21));
         persons.add(new Person(3, "name" + 3, 34));

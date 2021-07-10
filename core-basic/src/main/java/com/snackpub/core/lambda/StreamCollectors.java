@@ -71,11 +71,30 @@ public class StreamCollectors {
         }
     }
 
-    @Data
-    @AllArgsConstructor
     private static class PlayList {
         private String ip;
         private Integer id;
+
+        public PlayList(String ip, Integer id) {
+            this.ip = ip;
+            this.id = id;
+        }
+
+        public String getIp() {
+            return ip;
+        }
+
+        public void setIp(String ip) {
+            this.ip = ip;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
     }
 
 

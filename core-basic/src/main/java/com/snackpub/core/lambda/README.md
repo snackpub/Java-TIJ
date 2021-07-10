@@ -43,4 +43,3 @@ System.out.println(
 ## 相关主题
 * Oracle Java 8 官方文档对 java.util.stream package 的说明。
 https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
-* Java 8 中的 Streams API 详解 https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/

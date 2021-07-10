@@ -1,4 +1,4 @@
-package com.snackpub.core.lambda.higher_order_fun;
+package com.snackpub.core.lambda.higherorderfun;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,7 @@ public class HigherOrderFunction {
 
 
     /**
-     * 示例1. 一个接收函数的函数
+     * 清单1. 一个接收函数的函数
      *
      * @param values   对象
      * @param selector 函数接口
@@ -31,8 +31,7 @@ public class HigherOrderFunction {
     }
 
     /**
-     * 清单2：
-     * 创建并返回 Predicate 来验证给定值是否为奇数的函数
+     * 清单2. 创建并返回 Predicate 来验证给定值是否为奇数的函数
      *
      * @return Predicate<Integer>
      */
@@ -41,8 +40,7 @@ public class HigherOrderFunction {
     }
 
     /**
-     * 清单3
-     * 创建可重复的函数
+     * 清单3. 创建可重复的函数
      * 设想我们有两个列表 numbers1 和 numbers2。
      * 假设我们想从第一个列表中仅提取大于 50 的数，然后从第二个列表中提取大于 50 的值并乘以 2。
      */
@@ -53,7 +51,7 @@ public class HigherOrderFunction {
         // 重用一个Predicate，让代码更富裕表达
         Predicate<Integer> isGreaterThan50 = n -> n > 50;
 
-//        Predicate<Integer> isGreaterThan40 = a -> a > 40;
+        // Predicate<Integer> isGreaterThan40 = a -> a > 40;
 
         List<Integer> collect = numbers1.stream()
                 .filter(isGreaterThan50)
@@ -63,7 +61,7 @@ public class HigherOrderFunction {
                 .map(m -> m * 2)
                 .collect(toList());
 
-        // 示例2
+        // for example 2
         // 现在假设我们想从列表 numbers1 中提取大于 25、50 和 75 的值。我们可以首先编写 3 个不同的 lambda 表达式
         List<Integer> valuesOver25 = numbers1.stream()
                 .filter(e -> e > 25)
@@ -76,15 +74,16 @@ public class HigherOrderFunction {
         List<Integer> valuesOver75 = numbers1.stream()
                 .filter(e -> e > 75)
                 .collect(toList());
-        // 尽管上面每个 lambda 表达式将输入与一个不同的值比较，但它们做的事情完全相同。如何以较少的重复来重写此代码？
-
-        // 函数接口 Function<T, R> 将一个 T 类型的输入转换为 R 类型的输出
-        // 引用 isGreaterThan 引用了一个表示 Function<T, R>— 或更准确地讲表示 Function<Integer, Predicate<Integer>> 的 lambda 表达式。
-        // 输入是一个 Integer，输出是一个 Predicate<Integer>
-        // 在 lambda 表达式的主体中（外部 {} 内），我们创建了另一个引用 isGreaterThanPivot，
-        // 它包含对另一个 lambda 表达式的引用。这一次，该引用是一个 Predicate 而不是 Function。
-        // 最后，我们返回该引用。
-        // isGreaterThan 是一个 lambda 表达式的引用，该表达式在调用时返回另一个 lambda 表达式 — 换言之，这里隐藏着一种 lambda 表达式级联关系。
+        /*
+         * 尽管上面每个 lambda 表达式将输入与一个不同的值比较，但它们做的事情完全相同。如何以较少的重复来重写此代码？
+         * 函数接口 Function<T, R> 将一个 T 类型的输入转换为 R 类型的输出
+         * 引用 isGreaterThan 引用了一个表示 Function<T, R>或更准确地讲表示 Function<Integer, Predicate<Integer>> 的 lambda 表达式。
+         * 输入是一个 Integer，输出是一个 Predicate<Integer>
+         * 在 lambda 表达式的主体中（外部 {} 内），我们创建了另一个引用 isGreaterThanPivot，
+         * 它包含对另一个 lambda 表达式的引用。这一次，该引用是一个 Predicate 而不是 Function。
+         * 最后，我们返回该引用。
+         * isGreaterThan 是一个 lambda 表达式的引用，该表达式在调用时返回另一个 lambda 表达式 — 换言之，这里隐藏着一种 lambda 表达式级联关系。
+         */
         Function<Integer, Predicate<Integer>> isGreaterThan = (Integer pivot) -> {
             Predicate<Integer> isGreaterThanPivot = (Integer candidate) -> {
                 return candidate > pivot;
@@ -144,8 +143,7 @@ public class HigherOrderFunction {
         print("----------------", System.out::println);
 
         IntStream intStream = IntStream.of(1, 2, 4, 5, 6);
-        // boxed 返回一个Stream流，它由这个流的元素组成，每个元素都装箱为Integer，这是一个中间操作，返回
-        // 一个一致的Stream元素
+        // boxed 返回一个Stream流，它由这个流的元素组成，每个元素都装箱为Integer，这是一个中间操作，返回一个一致的Stream元素
         List<Integer> numbers = intStream.boxed().collect(toList());
         // 参数2是函数式接口（Predicate），我们可以将一个lambda表达式作为第二个参数传递给totalSelectedValues
         // 例如，如果我们想仅对一个 numbers 列表中的偶数值求和

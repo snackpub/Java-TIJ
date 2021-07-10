@@ -21,10 +21,10 @@ public class Parallelism {
 
         //------- 1. 并行 Parallelism
         ArrayList<String> list = new ArrayList<>(Arrays.asList("1", "2", "3"));
-        list.stream().forEach(System.out::println); // 并行流
+        list.parallelStream().forEach(System.out::println); // 并行流
 
+        list.stream().forEach(System.out::println); // 串行流
 
-        list.parallelStream().forEach(System.out::println); // 串行流
 
         // 通过parallel()方法可以将串行流转换成并行流,从并行流通过sequential转换为串行流
         IntStream.range(0, 3).parallel().sequential().forEach(System.out::println);

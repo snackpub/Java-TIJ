@@ -1,7 +1,6 @@
 package com.snackpub.core.lambda.fun;
 
 import java.util.Comparator;
-import java.util.function.Consumer;
 
 public class Java8Tester {
 
@@ -27,7 +26,7 @@ public class Java8Tester {
     public static void main(String[] args) {
         Java8Tester tester = new Java8Tester();
         // 类型声明
-        MathOperation addition = (int a, int b) -> a + b;
+        MathOperation addition = (int a, int b) -> a + b; // can replace Integer:sum
 
         //不用类型声明
         MathOperation subtraction = (a, b) -> a - b;
@@ -41,9 +40,11 @@ public class Java8Tester {
         MathOperation division = (int a, int b) -> a / b;
 
         int operation = tester.operation(10, 5, (int a, int b) -> a / b);
-        int operation1 = tester.operation(10, 5, (a, b) -> {
+        // {}括号内一行代码可以写成一行，如下
+        /*int operation1 = tester.operation(10, 5, (a, b) -> {
             return a * b;
-        });
+        });*/
+        int operation1 = tester.operation(10, 5, (int a, int b) -> a * b);
         int operation2 = tester.operation(10, 5, (a, b) -> a - b);
         int operation3 = tester.operation(10, 5, Integer::sum);
         System.out.println("10/5 = " + operation);
@@ -70,18 +71,21 @@ public class Java8Tester {
         };
         greetingService3.sayMessage(" Hello");
 
-        // 直接在 lambda 表达式中访问外层的局部变量
+        // 直接在 lambda 表达式中访问外层的局部变量,但是你不能赋值，且必须为fianl,即使你不声明，只要传入到lambda中编译器会默认隐式声明final
         final int num = 1;
         Converter<Integer, String> converter = param -> {
-            System.out.println(String.valueOf(param + num));
+            System.out.println((param + num));
         };
         converter.converter(10);
 
         String first2 = "";
-        Comparator<String> a =  (first, second) -> Integer.compare(first.length(), second.length());
+        Comparator<String> a = Comparator.comparingInt(String::length);
 
-//        String first = "";
-//        Comparator<String> exceptionHandler = (first, second) -> Integer.compare(first.length(), second.length());//编译会出错
+        // 在 Lambda 表达式当中不允许声明一个与局部变量同名的参数或者局部变量。
+        /*
+        String first = "";
+        Comparator<String> exceptionHandler = (first, second) -> Integer.compare(first.length(), second.length());//编译会出错
+        */
 
     }
 }
