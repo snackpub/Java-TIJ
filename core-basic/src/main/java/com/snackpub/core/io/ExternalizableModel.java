@@ -14,7 +14,7 @@ import java.math.BigDecimal;
  * @author snackpub
  * @date 2020-3-27
  */
-public class TestModel implements Externalizable {
+public class ExternalizableModel implements Externalizable {
 
     private String name;
 

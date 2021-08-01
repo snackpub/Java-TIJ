@@ -150,7 +150,7 @@ public class IoTest {
      */
     public static void objSerializable() {
         String filePath = "E:\\testModel.bat";
-        TestModel testModel = new TestModel();
+        ExternalizableModel testModel = new ExternalizableModel();
         testModel.setName("Snackpub");
         testModel.setSex("man");
         testModel.setMoney(BigDecimal.valueOf(0.1));
@@ -172,7 +172,7 @@ public class IoTest {
 
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath));
-            TestModel testModel = (TestModel) ois.readObject();
+            ExternalizableModel testModel = (ExternalizableModel) ois.readObject();
             System.out.println(testModel);
             ois.close();
         } catch (IOException | ClassNotFoundException e) {
