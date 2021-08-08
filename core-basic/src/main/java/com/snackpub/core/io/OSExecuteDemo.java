@@ -5,7 +5,7 @@ import com.snackpub.core.util.OSExecute;
 
 public class OSExecuteDemo {
   public static void main(String[] args) {
-    OSExecute.command("javap F:\\Work\\JavaBasicStudy\\core-basic\\src\\main\\java\\com\\snackpub\\core\\io\\OSExecuteDemo");
+    OSExecute.command("javap OSExecuteDemo");
   }
 } /* Output:
 Compiled from "OSExecuteDemo.java"
