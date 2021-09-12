@@ -10,8 +10,8 @@ enum Signal { GREEN, YELLOW, RED, }
  * 枚举天生就具备整数值的次序，并且通过ordinal()方法取得次序（显然编译器帮我们做了很多工作）
  */
 public class TrafficLight {
-  Signal color = Signal.RED;
-  public void change() {
+  private Signal color = Signal.RED;
+  private void change() {
     switch(color) {
       // Note that you don't have to say Signal.RED
       // in the case statement:
