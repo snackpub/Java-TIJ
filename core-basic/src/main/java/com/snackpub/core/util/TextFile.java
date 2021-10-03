@@ -58,13 +58,10 @@ public class TextFile extends ArrayList<String> {
 
     public void write(String fileName) {
         try {
-            PrintWriter out = new PrintWriter(
-                    new File(fileName).getAbsoluteFile());
-            try {
+            try (PrintWriter out = new PrintWriter(
+                    new File(fileName).getAbsoluteFile())) {
                 for (String item : this)
                     out.println(item);
-            } finally {
-                out.close();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
