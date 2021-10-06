@@ -4,8 +4,7 @@
 
 |元注解|解释|        
 |:----|:----|
-|@Target|表示注解用于什么地方。可能的ElementType参数包括：
-CONSTRUCTOR: 构造器声明 FIELD: 域声明（包括enum实例），LOCAL_VARIABLE:局部变量声明，METHOD: 方法声明，PACKAGE：包声明。PARAMETER: 参数说明，TYPE: 类、接口（包括注解类型）或enum声明。|
+|@Target|表示注解用于什么地方。可能的ElementType参数包括：CONSTRUCTOR: 构造器声明 FIELD: 域声明（包括enum实例），LOCAL_VARIABLE:局部变量声明，METHOD: 方法声明，PACKAGE：包声明。PARAMETER: 参数说明，TYPE: 类、接口（包括注解类型）或enum声明。|
 |@Retention|表示需要在什么级别保存该注解信息。可选的RetentionPolicy参数包括：SOURCE: 注解将被编译器丢弃，CLASS:注解在class文件中可用，但会被VM丢掉，RUNTIME:VM在运行期也会保留注解，因此可以通过反射机制读取注解|
 |@Documented|将此注解包含在Javadoc中|
 |@Inherited|允许子类继承父类中的注解|
